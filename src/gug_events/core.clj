@@ -1,61 +1,44 @@
 (ns gug-events.core
   (:require [clojure.data.json :as json]
-            [gug-events.event :as event]))
+            [gug-events.event.mapper :refer [event-to-map]]
+            [gug-events.event.filter :as filter]
+            [gug-events.event.transform :as transform]
+            [clojure.tools.cli :as cli])
+  (:gen-class))
+
+(def cli-options
+  ;; An option with a required argument
+  [["-f" "--file inputFile.json" "input file"
+    :default "resources/events_2014-15.json"
+    :validate [#(.exists (clojure.java.io/as-file %)) "Must be a file"]
+    ]
+   ;; A boolean option defaulting to nil
+   ["-h" "--help"]])
 
 (defn -main [& args]
 
-  (defn get-interval-filter
-    [from, to]
-    (fn [interval]
-      (and
-        (>= interval from)
-        (< interval to)
-        )))
+  (def options
+    (cli/parse-opts args cli-options))
 
   (def events
-    (map event/transform-event
+    (map event-to-map
          (json/read-str
-           (slurp (first args))
+           (slurp (get-in options [:options :file]))
            :key-fn keyword)))
 
   (def events-without-extended
     (filter
       (fn [event]
-        (not (re-matches #".*Extended.*" (get event :name)))
-        )
+        (not
+          (filter/containsExtended? event)))
       events))
-
-  (defn map-by-interval
-    [events interval]
-    (map (fn [from to]
-           (def filter-function
-             (get-interval-filter from to))
-
-           (hash-map
-             (list from to)
-             (count
-               (filter
-                 (fn [event]
-                   (filter-function (get event :interval)))
-                 events))))
-         (first interval) (second interval))
-    )
 
   (clojure.pprint/pprint
     (count events))
 
 
   (clojure.pprint/pprint
-    (count events-without-extended))
-
-  (clojure.pprint/pprint
-    (map-by-interval
+    (transform/map-by-interval
       events
-      (list
-        (list -500 0 0 0 0 0 0 14) (list 0 1 3 5 7 10 14 500))))
-
-  (clojure.pprint/pprint
-    (map-by-interval
-      events-without-extended
       (list
         (list -500 0 0 0 0 0 0 14) (list 0 1 3 5 7 10 14 500)))))

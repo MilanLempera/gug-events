@@ -1,6 +1,6 @@
 (ns gug-events.core
   (:require [clojure.data.json :as json]
-            [gug-events.event :as event]))
+            [gug-events.mapper :as event]))
 
 (defn loadEvents
   "Load events from file"
@@ -19,7 +19,7 @@
                    (< (get event :interval) to)
                    (not (re-matches #".*Extended.*" (get event :name)))
                    ))
-               (map event/transform-event
+               (map event/event-to-map
                     (loadEvents "resources/events.json"))))))
        (list -500 0 0 0 0 0 0 14) (list 0 1 3 5 7 10 14 500)))
 
@@ -32,7 +32,7 @@
              (filter
                (fn [event]
                  (= (get event :created-day) day))
-               (map event/transform-event
+               (map event/event-to-map
                     (loadEvents "resources/events.json"))))))
        (range 0 31)))
 

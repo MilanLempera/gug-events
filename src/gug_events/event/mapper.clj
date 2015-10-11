@@ -1,4 +1,4 @@
-(ns gug-events.event
+(ns gug-events.event.mapper
   (:require [clj-time.core :as time]
             [clj-time.format :as time-format]))
 
@@ -39,14 +39,17 @@
 
   ((if negative - +) interval))
 
-(defn transform-event
+(defn event-to-map
   "Count days between publication a start"
   [event]
   (def event-name
-    (get (get event :event) :event-name))
+    (if
+      (contains? event :event_name)
+      (get event :event_name)
+      (get-in event [:event :event-name])))
 
   (hash-map
-    :name (or event-name (get event :event_name) "none")
+    :name (or event-name "")
     :groups (map :name (get event :groups))
     :interval (create-interval event)
     :created-day (time/day (get-create-date event))
