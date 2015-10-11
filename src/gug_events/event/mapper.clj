@@ -39,7 +39,7 @@
 
   ((if negative - +) interval))
 
-(defn event-to-map
+(defn event->map
   "Count days between publication a start"
   [event]
   (def event-name

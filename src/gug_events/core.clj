@@ -1,6 +1,6 @@
 (ns gug-events.core
   (:require [clojure.data.json :as json]
-            [gug-events.event.mapper :refer [event-to-map]]
+            [gug-events.event.mapper :refer [event->map]]
             [gug-events.event.filter :as filter]
             [gug-events.event.transform :as transform]
             [clojure.tools.cli :as cli])
@@ -15,21 +15,17 @@
    ;; A boolean option defaulting to nil
    ["-h" "--help"]])
 
-(defn print-stats
+(defn get-stats
   [events]
-  (clojure.pprint/pprint
-    (count events))
 
-
-  (clojure.pprint/pprint
-    (transform/map-by-interval
-      events
-      (list
-        (list -500 0 0 0 0 0 0 14) (list 0 1 3 5 7 10 14 500))))
-
-  (clojure.pprint/pprint
-    (transform/map-by-day
-      events)))
+  {:count       (count events)
+   :by-interval (transform/map-by-interval
+                  events
+                  (list
+                    (list -500 0 0 0 0 0 0 14) (list 0 1 3 5 7 10 14 500)))
+   :by-day      (transform/map-by-day
+                  events)
+   })
 
 (defn -main [& args]
 
@@ -37,17 +33,16 @@
     (cli/parse-opts args cli-options))
 
   (def events
-    (map event-to-map
+    (map event->map
          (json/read-str
            (slurp (get-in options [:options :file]))
            :key-fn keyword)))
 
   (def events-without-extended
     (filter
-      (fn [event]
-        (not
-          (filter/containsExtended? event)))
+      (complement filter/containsExtended?)
       events))
 
-  (print-stats events)
-  (print-stats events-without-extended))
+  (clojure.pprint/pprint
+    (map get-stats
+         (list events events-without-extended))))
