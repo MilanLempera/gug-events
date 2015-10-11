@@ -41,4 +41,8 @@
     (transform/map-by-interval
       events
       (list
-        (list -500 0 0 0 0 0 0 14) (list 0 1 3 5 7 10 14 500)))))
+        (list -500 0 0 0 0 0 0 14) (list 0 1 3 5 7 10 14 500))))
+
+  (clojure.pprint/pprint
+    (transform/map-by-day
+      events)))
