@@ -15,6 +15,22 @@
    ;; A boolean option defaulting to nil
    ["-h" "--help"]])
 
+(defn print-stats
+  [events]
+  (clojure.pprint/pprint
+    (count events))
+
+
+  (clojure.pprint/pprint
+    (transform/map-by-interval
+      events
+      (list
+        (list -500 0 0 0 0 0 0 14) (list 0 1 3 5 7 10 14 500))))
+
+  (clojure.pprint/pprint
+    (transform/map-by-day
+      events)))
+
 (defn -main [& args]
 
   (def options
@@ -33,16 +49,5 @@
           (filter/containsExtended? event)))
       events))
 
-  (clojure.pprint/pprint
-    (count events))
-
-
-  (clojure.pprint/pprint
-    (transform/map-by-interval
-      events
-      (list
-        (list -500 0 0 0 0 0 0 14) (list 0 1 3 5 7 10 14 500))))
-
-  (clojure.pprint/pprint
-    (transform/map-by-day
-      events)))
+  (print-stats events)
+  (print-stats events-without-extended))
