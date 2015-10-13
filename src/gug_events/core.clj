@@ -22,7 +22,7 @@
    :by-interval (transform/map-by-interval
                   events
                   (list
-                    (list -500 0 0 0 0 0 0 14) (list 0 1 3 5 7 10 14 500)))
+                    (list -500 0 1 3 5 7 10 14) (list 0 1 3 5 7 10 14 500)))
    :by-day      (transform/map-by-day
                   events)
    })
