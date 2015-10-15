@@ -28,6 +28,6 @@
             (fn [event]
               (= (get event :created-day) day))
             events))))
-    (range 1 31)))
+    (range 1 32)))
 
 

@@ -10,9 +10,11 @@
   ;; An option with a required argument
   [["-f" "--file inputFile.json" "input file"
     :default "resources/events_2014-15.json"
-    :validate [#(.exists (clojure.java.io/as-file %)) "Must be a file"]
-    ]
-   ;; A boolean option defaulting to nil
+    :validate [#(.exists (clojure.java.io/as-file %)) "Must be a file"]]
+
+   ["-o" "--output outputFile.json" "output file"
+    :default "output.json"]
+
    ["-h" "--help"]])
 
 (defn get-stats
@@ -22,7 +24,7 @@
    :by-interval (transform/map-by-interval
                   events
                   (list
-                    (list -500 0 1 3 5 7 10 14) (list 0 1 3 5 7 10 14 500)))
+                    (list -500 0 1 3 5 7 14) (list 0 1 3 5 7 14 500)))
    :by-day      (transform/map-by-day
                   events)
    })
@@ -43,6 +45,7 @@
       (complement filter/containsExtended?)
       events))
 
-  (clojure.pprint/pprint
-    (map get-stats
-         (list events events-without-extended))))
+  (spit (get-in options [:options :output])
+        (json/write-str
+          (map get-stats
+               (list events events-without-extended)))))
