@@ -9,7 +9,7 @@
 (def cli-options
   ;; An option with a required argument
   [["-f" "--file inputFile.json" "input file"
-    :default "resources/events_2014-15.json"
+    :default "resources/event_occurence_2016.json"
     :validate [#(.exists (clojure.java.io/as-file %)) "Must be a file"]]
 
    ["-o" "--output outputFile.json" "output file"
@@ -31,21 +31,14 @@
 
 (defn -main [& args]
 
-  (def options
-    (cli/parse-opts args cli-options))
+  (let [options (cli/parse-opts args cli-options)
+        events (map event->map
+                    (json/read-str (slurp (get-in options [:options :file]))
+                                   :key-fn keyword))
+        events-without-extended (filter (complement filter/containsExtended?)
+                                        events)]
 
-  (def events
-    (map event->map
-         (json/read-str
-           (slurp (get-in options [:options :file]))
-           :key-fn keyword)))
-
-  (def events-without-extended
-    (filter
-      (complement filter/containsExtended?)
-      events))
-
-  (spit (get-in options [:options :output])
-        (json/write-str
-          (map get-stats
-               (list events events-without-extended)))))
+    (spit (get-in options [:options :output])
+          (json/write-str
+            (map get-stats
+                 (list events events-without-extended))))))
