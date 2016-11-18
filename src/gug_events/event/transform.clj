@@ -30,4 +30,15 @@
             events))))
     (range 1 32)))
 
-
+(defn map-by-month
+  [events]
+  (map
+    (fn [month]
+      (hash-map
+        month
+        (count
+          (filter
+            (fn [event]
+              (= (:start-month event) month))
+            events))))
+    (range 1 13)))

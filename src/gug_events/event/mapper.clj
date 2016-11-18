@@ -39,15 +39,17 @@
   "Count days between publication a start"
   [event]
   (let [event-name (if (contains? event :event_name)
-                     (get event :event_name)
-                     (get-in event [:event :event-name]))]
+                     (:event_name event )
+                     (get-in event [:event :event_name]))]
 
     (hash-map
       :name (or event-name "")
       :groups (map :name (get event :groups))
       :interval (create-interval event)
       :created-day (time/day (get-create-date event))
+      :created-month (time/month (get-create-date event))
       :created (.toString (get-create-date event))
+      :start-month (time/month (get-start-date event))
       :start (.toString (get-start-date event)))))
 
 

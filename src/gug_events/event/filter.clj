@@ -9,4 +9,5 @@
       )))
 
 (defn containsExtended? [event]
-  (re-matches #".*Extended.*" (get event :name)))
+  (println (:name event))
+  (re-matches #".*Extended.*" (:name event)))
