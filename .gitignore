@@ -8,5 +8,8 @@ pom.xml.asc
 *.class
 /.lein-*
 /.nrepl-port
+/.gorilla-port
+/*.iml
 .hgignore
 .hg/
+output.json
