@@ -9,7 +9,7 @@
 (def cli-options
   ;; An option with a required argument
   [["-f" "--file inputFile.json" "input file"
-    :default "resources/event_occurence_2016.json"
+    :default "resources/event_occurence.json"
     :validate [#(.exists (clojure.java.io/as-file %)) "Must be a file"]]
 
    ["-o" "--output outputFile.json" "output file"
